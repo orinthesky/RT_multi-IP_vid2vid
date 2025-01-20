@@ -1,0 +1,304 @@
+{
+  "1": {
+    "inputs": {
+      "control_net_name": "control_v11p_sd15_canny.pth"
+    },
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "Load ControlNet Model"
+    }
+  },
+  "2": {
+    "inputs": {
+      "backend": "inductor",
+      "fullgraph": false,
+      "mode": "default",
+      "controlnet": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "TorchCompileLoadControlNet",
+    "_meta": {
+      "title": "TorchCompileLoadControlNet"
+    }
+  },
+  "3": {
+    "inputs": {
+      "strength": 0.6,
+      "start_percent": 0,
+      "end_percent": 1,
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "control_net": [
+        "2",
+        0
+      ],
+      "image": [
+        "64",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "Apply ControlNet"
+    }
+  },
+  "4": {
+    "inputs": {
+      "text": "fire geometry",
+      "clip": [
+        "6",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "5": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "6",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "6": {
+    "inputs": {
+      "ckpt_name": "dreamshaper_8.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "7": {
+    "inputs": {
+      "backend": "inductor",
+      "model": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "TorchCompileModel",
+    "_meta": {
+      "title": "TorchCompileModel"
+    }
+  },
+  "8": {
+    "inputs": {
+      "unet_name": "dreamshaper_8_dmd_1kstep.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "10": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "13": {
+    "inputs": {
+      "backend": "inductor",
+      "fullgraph": false,
+      "mode": "default",
+      "compile_encoder": true,
+      "compile_decoder": true,
+      "vae": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "TorchCompileLoadVAE",
+    "_meta": {
+      "title": "TorchCompileLoadVAE"
+    }
+  },
+  "14": {
+    "inputs": {
+      "vae_name": "taesd"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "24": {
+    "inputs": {
+      "vae": "taesd_decoder.pth",
+      "latent": [
+        "45",
+        0
+      ]
+    },
+    "class_type": "TAESDVaeDecode",
+    "_meta": {
+      "title": "TAESD VAE Decode (RyanOnTheInside)"
+    }
+  },
+  "45": {
+    "inputs": {
+      "seed": 441494593868324,
+      "steps": 3,
+      "cfg": 1,
+      "sampler_name": "lcm",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": [
+        "60",
+        0
+      ],
+      "positive": [
+        "3",
+        0
+      ],
+      "negative": [
+        "3",
+        1
+      ],
+      "latent_image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "48": {
+    "inputs": {
+      "image": "example.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "49": {
+    "inputs": {
+      "images": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "52": {
+    "inputs": {
+      "preset": "PLUS (high strength)",
+      "model": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "IPAdapterUnifiedLoader",
+    "_meta": {
+      "title": "IPAdapter Unified Loader"
+    }
+  },
+  "57": {
+    "inputs": {
+      "backend": "inductor",
+      "model": [
+        "52",
+        0
+      ]
+    },
+    "class_type": "TorchCompileModel",
+    "_meta": {
+      "title": "TorchCompileModel"
+    }
+  },
+  "60": {
+    "inputs": {
+      "weight": 1,
+      "weight_type": "linear",
+      "start_at": 0,
+      "end_at": 1,
+      "embeds_scaling": "V only",
+      "model": [
+        "57",
+        0
+      ],
+      "ipadapter": [
+        "52",
+        1
+      ],
+      "pos_embed": [
+        "69",
+        0
+      ],
+      "neg_embed": [
+        "70",
+        0
+      ]
+    },
+    "class_type": "IPAdapterEmbeds",
+    "_meta": {
+      "title": "IPAdapter Embeds"
+    }
+  },
+  "64": {
+    "inputs": {
+      "low_threshold": 0.2,
+      "high_threshold": 0.6,
+      "image": [
+        "48",
+        0
+      ]
+    },
+    "class_type": "Canny",
+    "_meta": {
+      "title": "Canny"
+    }
+  },
+  "69": {
+    "inputs": {
+      "embeds": "RainbowFire_IP_embed_00001.ipadpt"
+    },
+    "class_type": "IPAdapterLoadEmbeds",
+    "_meta": {
+      "title": "IPAdapter Load Embeds"
+    }
+  },
+  "70": {
+    "inputs": {
+      "embeds": "negative_IPnoise_00001.ipadpt"
+    },
+    "class_type": "IPAdapterLoadEmbeds",
+    "_meta": {
+      "title": "IPAdapter Load Embeds"
+    }
+  }
+}
